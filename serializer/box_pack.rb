@@ -22,7 +22,17 @@ class Box < Hash
     hidden: 1 << 0,
     volatile: 1 << 1
   }
-  
+
+  def method_missing(method, *args)
+    m = method.to_s
+    key = m.gsub(/=$/,'')
+    raise Error "Invalid key name" if valid?(key)
+    m.match(/=$/) ? self.send("[#{key}]=", *args) : self[key]
+  end
+
+  def valid?(key)
+    !key.match(/^_/).nil?
+  end
 end
 
 class BoxPack
