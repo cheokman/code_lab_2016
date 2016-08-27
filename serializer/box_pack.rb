@@ -1,4 +1,4 @@
-class Box < Hash
+class ComponentBox < Box
   CLASS_MAPPINGS = {
       static: 0,
       attribute: 1,
@@ -22,9 +22,16 @@ class Box < Hash
     hidden: 1 << 0,
     volatile: 1 << 1
   }
+end
+
+class Box < Hash
+  def initialize()
+    @_protected = []
+    super()
+  end
 
   def []=(key, value)
-    raise Error.new(name) if valid_key?(key)
+    raise Error.new(name) if protected?(key)
     self[name.to_s] = value
   end
 
@@ -32,15 +39,25 @@ class Box < Hash
     self[name.to_s]
   end
 
+  # Prevents a parameter from being reassigned.
+  def protect(key)
+    @_protected << key.to_s
+  end
+
+  # Removes the protection of a parameter.
+  def unprotect(key)
+    @_protected.reject! { |e| e == key.to_s }
+  end
+
   def method_missing(method, *args)
     m = method.to_s
     key = m.gsub(/=$/,'')
-    raise Error "Invalid key name" if valid_key?(key)
+    raise Error "Invalid key name" if protected?(key)
     m.match(/=$/) ? self.send("[#{key}]=", *args) : self[key]
   end
 
-  def valid_key?(key)
-    !key.match(/^_/).nil?
+  def protected?(key)
+    @_protected.include?(key.to_s)
   end
 end
 
