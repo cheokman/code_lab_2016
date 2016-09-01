@@ -9,8 +9,9 @@ module Gear
       rule = Rule.new
       rule.symbol_id   = options[:symbol_id]
       rule.symbol_name = options[:symbol_name]
-      rule.count       = options[:count]
       rule.multiplier  = options[:multiplier]
+      rule.trigger  = options[:trigger] 
+      rule.trigger_count  = options[:trigger_count] if rule.trigger.present?
       rule.block       = block
 
       defined_rules[obj] ||= []
