@@ -2,7 +2,7 @@ module Gear
   # Rules has a symbol name, a target to symbol, a conditions block
   # and a temporary option.
   class Rule
-    attr_accessor :symbol_id, :symbol_name, :count, :multiplier, :block
+    attr_accessor :symbol_id, :symbol_name, :multiplier, :trigger, :trigger_count, :block
 
     # Does this rule's condition block apply?
     def applies?(target_obj = nil)
