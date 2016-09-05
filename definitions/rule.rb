@@ -10,7 +10,7 @@ module Gear
 
       case block.arity
       when 1 # Expects target object
-        if target_obj.present?
+        unless target_obj.nil?
           block.call(target_obj)
         else
           puts '[gear] no target_obj found on Rule#applies?'
