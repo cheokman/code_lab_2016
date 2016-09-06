@@ -1,5 +1,7 @@
 require 'descendants_tracker'
 
+require 'erm/configuration'
+
 module ERM
   Undefined = Object.new.freeze
 
@@ -12,11 +14,12 @@ module ERM
     @configuration ||= Configuration.new
   end
 
-  def register_model(klass)
+  def self.register_model(klass)
     models.push(klass) unless models.include?(klass)
   end
 
-  def models
+  def self.models
     @models ||= []
   end  
 end
+
