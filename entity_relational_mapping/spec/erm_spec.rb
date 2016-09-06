@@ -17,7 +17,7 @@ describe ERM do
       described_class.register_model(B)
       expect(described_class.models).to include(B)
       described_class.register_model(A)
-      expect(described_class.models).to include(A)
+      expect(described_class.models.count(A)).to eq(1)
     end
   end
 
