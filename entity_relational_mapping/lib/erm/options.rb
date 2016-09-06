@@ -1,5 +1,5 @@
 module ERM
-    module Options
+  module Options
 
     def options
       accepted_options.each_with_object({}) do |option_name, options|

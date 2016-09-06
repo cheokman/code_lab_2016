@@ -1,6 +1,6 @@
 module ERM
   class Attribute
-    extend Options
+    extend DescendantsTracker, Options, TypeLookup
 
     accept_options :visibility, :default, :as
 
@@ -8,6 +8,14 @@ module ERM
 
     def self.builder(type, options={})
       Builder.call(type, options)
+    end
+
+    def self.build_type(definition)
+      definition.primitive
+    end
+
+    def self.merge_options!(*)
+      # noop
     end
 
     def initialize(type, options)
