@@ -1,5 +1,8 @@
 module ERM
   class Configuration
+
+    attr_accessor :finalize
+
     def initialize(options={})
       @finalize        = options.fetch(:finalize, true)
 
