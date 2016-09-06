@@ -1,11 +1,23 @@
 module ERM
   class Attribute
+    extend Options
+
+    accept_options :visibility, :default, :as
+
     attr_reader :type, :options, :default_value
+
+    def self.builder(type, options={})
+      Builder.call(type, options)
+    end
 
     def initialize(type, options)
       @type          = type
       @options       = options
       @default_value = options.fetch(:default_value)
+    end
+
+    def lazy?
+      kind_of?(LazyDefault)
     end
 
     def define_accessor_methods(attribute_set)
