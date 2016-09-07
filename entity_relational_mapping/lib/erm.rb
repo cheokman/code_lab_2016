@@ -2,6 +2,7 @@ require 'descendants_tracker'
 
 require 'erm/configuration'
 require 'erm/options'
+require 'erm/model'
 
 module ERM
   Undefined = Object.new.freeze
