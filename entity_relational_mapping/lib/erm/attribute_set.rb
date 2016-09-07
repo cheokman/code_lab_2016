@@ -1,11 +1,18 @@
 module ERM
-  class AttributeSet
+  class AttributeSet < Module
     include Enumerable
 
+    def self.create(descendant)
+      if descendant.respond_to?(:superclass) && descendant.superclass.respond_to?(:attribute_set)
+        parent = descendant.superclass.public_send(:attribute_set)
+      end
+      descendant.instance_variable_set('@attribute_set', AttributeSet.new(parent))
+    end
+
     def initialize(parent = nil, attributes = [])
-      @parent = parent
+      @parent     = parent
       @attributes = attributes.dup
-      @mapping      = {}
+      @mapping    = {}
       reset
     end
 
