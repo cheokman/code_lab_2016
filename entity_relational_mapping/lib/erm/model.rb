@@ -41,11 +41,11 @@ module ERM
         self
       end
 
-      def values(&block)
-        private :attributes= if instance_methods.include?(:attributes=)
-        yield
-        include(::Equalizer.new(*attribute_set.map(&:name)))
-      end
+      # def values(&block)
+      #   private :attributes= if instance_methods.include?(:attributes=)
+      #   yield
+      #   include(::Equalizer.new(*attribute_set.map(&:name)))
+      # end
 
       def allowed_writer_methods
         @allowed_writer_methods ||=
