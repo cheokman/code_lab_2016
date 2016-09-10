@@ -67,7 +67,7 @@ module ERM
     end
 
     def set(object, attributes)
-      coerce(attributes).each do |name, value|
+      attributes.each do |name, value|
         writer_name = "#{name}="
         if object.allowed_writer_methods.include?(writer_name)
           object.__send__(writer_name, value)
