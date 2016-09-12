@@ -29,9 +29,6 @@ describe ERM::AttributeSet do
         end
       end
 
-      before(:each) do
-      end
-
       it "is descendant of module" do
         expect(described_class.ancestors).to include(Module)
       end
