@@ -59,7 +59,7 @@ module ERM
       end
 
       def self.determine_type(klass, default=nil)
-        type = Attriute.determine_type(klass)
+        type = Attribute.determine_type(klass)
       end
 
       def initialize(definition, options)
