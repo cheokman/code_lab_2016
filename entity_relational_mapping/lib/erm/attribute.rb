@@ -6,7 +6,7 @@ module ERM
 
     attr_reader :type, :options, :default_value
 
-    def self.builder(type, options={})
+    def self.build(type, options={})
       Builder.call(type, options)
     end
 
