@@ -6,7 +6,8 @@ require 'erm/model'
 require 'erm/attribute_set'
 require 'erm/type_lookup'
 require 'erm/attribute'
-
+require 'erm/boolean'
+require 'erm/attribute/builder'
 
 module ERM
   Undefined = Object.new.freeze
