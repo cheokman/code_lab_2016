@@ -5,7 +5,7 @@ module ERM
       symbol: Symbol,
       integer: Integer,
       float: Float,
-      big_decimal: Bignum,
+      big_decimal: Bignum, # need to check with Integer feature with ruby 3.x
       string: String,
       time: Time,
       date: Date,
@@ -26,7 +26,7 @@ module ERM
     def initialize(type, options={})
       @type = type
       @options = options
-      @primitive = TYPE_MAPPINGS.fetch(options[:type], Object)
+      @primitive = TYPE_MAPPINGS.fetch(@type, Object)
       @flags = VISIBILITY_MAPPINGS.fetch(options[:flags], VISIBILITY_MAPPINGS[:standard])
       @capacity = 0
     end
