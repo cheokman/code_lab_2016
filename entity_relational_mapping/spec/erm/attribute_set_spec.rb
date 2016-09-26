@@ -55,6 +55,25 @@ describe ERM::AttributeSet do
         end
       end
 
+      describe "intialize a attribute set" do
+        let(:parent) do
+          Class.new do
+            include ERM::Model
+          end
+        end
+
+        let(:user) do
+          Class.new(parent) do
+            include ERM::Model
+          end
+        end
+
+        context "when parent parameter" do
+          it "define parent variable" do
+            expect(user.attribute_set.instance_variable_get(:@parent)).to be_eql(parent.attribute_set)
+          end
+        end
+      end
     end
   end
 end
