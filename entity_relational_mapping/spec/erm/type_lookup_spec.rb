@@ -61,9 +61,4 @@ describe ERM::TypeLookup do
   it "need to implement primitive" do
     expect{@model.primitive}.to raise_error(NotImplementedError)
   end
-
-  it "can determine type from primitive" do
-    expect(@attribute.send(:determine_type_from_primitive, str_defined)).to be_eql(str_defined.primitive)
-  end
-
 end
