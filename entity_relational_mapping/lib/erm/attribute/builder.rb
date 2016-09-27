@@ -60,11 +60,6 @@ module ERM
 
       def self.determine_type(klass, default=nil)
         type = Attribute.determine_type(klass)
-        if klass.is_a?(Class)
-          type ||= if klass < Enumerable && !(klass <= Range)
-            Collection
-          end
-        end
         type || default
       end
 
@@ -72,7 +67,7 @@ module ERM
         @definition = definition
 
         initialize_class
-        initialzie_type
+        initialize_type
         initialize_options(options)
         initialize_default_value
         initialize_attribute
