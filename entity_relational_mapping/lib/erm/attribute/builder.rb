@@ -79,7 +79,7 @@ module ERM
       end
 
       def initialize_class
-        @klass = self.class.determine_type(definition.primitive, Attriute)
+        @klass = self.class.determine_type(definition.primitive, Attribute)
       end
 
       def initialize_type
