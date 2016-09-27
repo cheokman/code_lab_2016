@@ -2,7 +2,7 @@ module ERM
   class Attribute
     extend DescendantsTracker, Options, TypeLookup
 
-    accept_options :visibility, :default, :as
+    accept_options :primitive, :visibility, :default, :as
 
     attr_reader :type, :options, :default_value
 
@@ -21,6 +21,7 @@ module ERM
     def initialize(type, options)
       @type          = type
       @options       = options
+      @primitive     = type.primitive
       @default_value = options.fetch(:default_value)
     end
 
