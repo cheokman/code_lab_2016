@@ -49,24 +49,24 @@ describe Axle::Configuration::Options do
     end
 
     context "accept over one options with value" do
-      before(:each) do
+      
+      subject { 
         @config.accept_options :server, :port
-        @config.server :sinatra
-      end
+        @config.server :sinatra 
+      }
+      
 
-      it "define individual access method" do
-        expect(@config).to respond_to(:server)
-        expect(@config).to respond_to(:server).with(1).argument
-        expect(@config).to respond_to(:port)
-        expect(@config).to respond_to(:port).with(1).argument
-      end
+      it { is_expected.to respond_to(:server) }
+      it { is_expected.to respond_to(:server).with(1).argument }
+      it { is_expected.to respond_to(:port) }
+      it { is_expected.to respond_to(:port).with(1).argument }
 
       it "can return define option" do
-        expect(@config.accepted_options).to contain_exactly(:server, :port)
+        expect(subject.accepted_options).to contain_exactly(:server, :port)
       end
 
       it "can return hash for options define value" do
-        expect(@config.options).to be_eql({:server => :sinatra})
+        expect(subject.options).to be_eql({:server => :sinatra})
       end
 
     end
