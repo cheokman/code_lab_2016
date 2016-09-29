@@ -54,7 +54,6 @@ describe Axle::Configuration::Options do
         @config.accept_options :server, :port
         @config.server :sinatra 
       }
-      
 
       it { is_expected.to respond_to(:server) }
       it { is_expected.to respond_to(:server).with(1).argument }
@@ -68,7 +67,40 @@ describe Axle::Configuration::Options do
       it "can return hash for options define value" do
         expect(subject.options).to be_eql({:server => :sinatra})
       end
+    end
+  end
+    
+  describe "#add_accepted_options" do
+    context "when first add accept options" do
+      subject {
+          @config.send(:add_accepted_options, [:server, :port, :host])
+      }
 
+      it "can have accepted_options" do
+        expect(subject.accepted_options).to contain_exactly(:server, :port, :host)
+      end
+    end
+
+    context "when no first add accept options" do
+      subject {
+        @config.accept_options :name
+        @config.send(:add_accepted_options, [:server, :port, :host])
+      }
+
+      it "can append accepted options to existing options" do
+        expect(subject.accepted_options).to contain_exactly(:name, :server, :port, :host)
+      end
+    end
+  end
+
+  describe "#set_options" do
+    subject {
+      @config.accept_options :server, :port, :host
+      @config.send(:set_options, {:server => "server", :port => 80, :host=>"host"})
+    }
+
+    it "can set options" do
+      expect(subject.options).to be_eql({:server => "server", :port => 80, :host=>"host"})
     end
   end
 end
