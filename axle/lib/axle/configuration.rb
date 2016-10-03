@@ -1,3 +1,5 @@
+require 'axle/configuration/options'
+
 module Axle
   class Configuration
     extend Options
