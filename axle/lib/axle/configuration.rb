@@ -4,8 +4,10 @@ module Axle
   class Configuration
     extend Options
 
-    accept_options :server, :port
+    accept_options :base_path, :server, :port
 
+    base_paht '/'
+    
     def initialize(options={})
       yield self if block_given?
     end
