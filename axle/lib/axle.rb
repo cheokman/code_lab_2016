@@ -25,3 +25,5 @@ if defined?(Sinatra)
 end
 
 require 'axle/configuration'
+require 'axle/errors/axle_errors'
+require 'axle/errors/observer_set_name_error'

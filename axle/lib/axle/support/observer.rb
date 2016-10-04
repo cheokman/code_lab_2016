@@ -8,15 +8,20 @@ module Axle
       
     module ClassMethods
       def add_observer(name, *obs)
-        raise ObserverSetNameError if name.nil?
-        get_observers(name)
+        named = check_name(name)
+        get_observers(named)
         obs.each do |o|
-          raise ObserverTypeError unless o.is_a? Processor
+          raise Axle::Errors::ObserverTypeError unless o.is_a? Processor
           @observers.push o
         end
       end
 
-     private
+      private
+
+      def check_name(name)
+       raise Axle::Errors::ObserverSetNameError if name.nil?
+       name
+      end
 
       def notify_observers(context)
         @observer.dup.each do |o|
