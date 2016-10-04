@@ -1,14 +1,18 @@
-require 'axle/configuration'
+require 'axle/support/options'
+require 'axle/support/observer'
+require 'axle/support/processor'
 
 module Axle
+  extend Observer
+  extend Processor
   Undefined = Object.new.freeze
 
   def self.config
     @config ||= Configuration.new
   end
 
-  def self.base_path
-    @config.base_path
+  def self.service_base_path
+    @config.service_base_path
   end
 end
 
@@ -19,3 +23,5 @@ end
 if defined?(Sinatra)
   require 'axle/sinatra'
 end
+
+require 'axle/configuration'
