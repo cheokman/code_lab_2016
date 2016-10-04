@@ -76,7 +76,20 @@ describe Axle::Observer do
         expect(@owner.instance_variable_get(:@observer_set)[:game]).to be_equal(observers)
       end
     end
+  end
+  
+  describe "#check_name" do
+    context "when name is nil" do
+      it "can raise ObserverSetNameError" do
+        expect {@owner.send(:check_name, nil)}.to raise_error(Axle::Errors::ObserverSetNameError)
+      end
+    end
+  end
 
+  describe "#add_observer" do
+    before(:each) do
+      allow(@owner).to receive(:get_observers) {{"game1" => [@ob1, @ob2]}}
+    end
   end
 
 end
