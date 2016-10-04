@@ -1,19 +1,18 @@
-require 'axle/configuration/options'
-
 module Axle
   class Configuration
     extend Options
 
-    accept_options :base_path, :server, :port
+    accept_options :service_base_path
 
-    base_paht '/'
-    
+    service_base_path '/'
+
     def initialize(options={})
       yield self if block_given?
     end
 
+    
     def to_h
-      options.freeze
+      self.class.options.freeze
     end
   end
 end
