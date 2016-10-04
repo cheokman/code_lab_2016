@@ -1,6 +1,6 @@
 module Axle
   module Errors
-    class ObserverSetNameError < AxleError
+    class ObserverSetNameError < AxleErrors
     end
   end
 end
