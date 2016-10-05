@@ -21,6 +21,14 @@ describe Axle::Observer do
     @new_ob2 = Class.new {
       extend Axle::Processor
     }
+
+    @error_ob1 = Class.new {
+      extend Axle::Processor
+
+      def self.process
+        raise Axle::Errors:AxleErrors
+      end
+    }
   end
 
   describe "#included" do
@@ -98,26 +106,78 @@ describe Axle::Observer do
     before(:each) do
       @owner.instance_variable_set(:@observer_set, {"game1" => [@ob1, @ob2]})
     end
+    
+    context "when observer is inherated from Processor" do
+      it "can add new game2 without observers" do
+        @owner.add_observer "game2"
+        expect(@owner.instance_variable_get(:@observers)).to be_empty
+      end
 
-    it "can add new game2 without observers" do
-      @owner.add_observer "game2"
-      expect(@owner.instance_variable_get(:@observers)).to be_empty
+      it "can add new game2 observers" do
+        @owner.add_observer "game2", @new_ob1, @new_ob2
+        expect(@owner.instance_variable_get(:@observers)).to be_eql([@new_ob1, @new_ob2])
+      end
+
+      it "can add existing game1 empty observer" do
+        @owner.add_observer "game1"
+        expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2])
+      end
+
+      it "can add existing game1 some new observer" do
+        @owner.add_observer "game1", @new_ob1
+        expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2, @new_ob1])
+      end
     end
-
-    it "can add new game2 observers" do
-      @owner.add_observer "game2", @new_ob1, @new_ob2
-      expect(@owner.instance_variable_get(:@observers)).to be_eql([@new_ob1, @new_ob2])
-    end
-
-    it "can add existing game1 empty observer" do
-      @owner.add_observer "game1"
-      expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2])
-    end
-
-    it "can add existing game1 some new observer" do
-      @owner.add_observer "game1", @new_ob1
-      expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2, @new_ob1])
+    context "when observer is not inherateed from Processor" do
+      it "can reject" do
+        expect {@owner.add_observer "game2", Class.new}.to raise_error(Axle::Errors::ObserverTypeError)
+      end  
     end
   end
 
+  describe "#notify_observers" do
+    before(:each) do
+      @owner.instance_variable_set(:@observer_set, {"game1" => [@ob1, @ob2]})
+      @owner.init_observer("game1")
+    end
+
+    context "when no any error" do
+      it "call observer one by one" do
+        context = {context: "data"}
+        expect(@ob1).to receive(:process).with(context)
+        expect(@ob2).to receive(:process).with(context)
+        @owner.send(:notify_observers,context)
+      end
+
+      it "ignore call ensure_handler" do
+        context = {context: "data"}
+        #allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
+        expect(@owner).to_not receive(:ensure_handler).with(context, Axle::Errors::AxleErrors)
+        @owner.send(:notify_observers, context)
+      end
+
+      it "ignore call error_handler" do
+        context = {context: "data"}
+        #allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
+        expect(@owner).to_not receive(:error_handler).with(context, Axle::Errors::AxleErrors)
+        @owner.send(:notify_observers, context)
+      end
+    end
+
+    context "when error" do
+      before(:each) do
+        @context = {context: "data"}
+      end
+
+      it "call error_handler" do
+        expect(@owner).to_not receive(:error_handler).with(@context, Axle::Errors::AxleErrors)
+        @owner.send(:notify_observers, @context)
+      end
+
+      it "call ensure_handler" do
+        expect(@owner).to_not receive(:ensure_handler).with(@context, Axle::Errors::AxleErrors)
+        @owner.send(:notify_observers, @context)
+      end
+    end
+  end
 end
