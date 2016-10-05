@@ -7,14 +7,19 @@ module Axle
     end
       
     module ClassMethods
+      def init_observer(name)
+        get_observers(name)
+      end
+
       def add_observer(name, *obs)
-        named = check_name(name)
-        get_observers(named)
+        get_observers(name)
         obs.each do |o|
           raise Axle::Errors::ObserverTypeError unless o.is_a? Processor
           @observers.push o
         end
       end
+
+      alias :add_observers :add_observer
 
       private
 
@@ -24,19 +29,30 @@ module Axle
       end
 
       def notify_observers(context)
-        @observer.dup.each do |o|
+        @observers.dup.each do |o|
           begin
             o.process(context)
-          rescue AxleErrors => e
+          rescue Axle::Errors::AxleErrors => e
             # TODO Axle Errors
+            error_handler(context,e)
           ensure
             next if e.nil?
             # Handle any unexpected Error Here
+            ensure_handler(context,e)
           end
         end 
       end
 
+      def ensure_handler(context, error)
+        
+      end
+
+      def error_handler(context, error)
+        
+      end
+
       def get_observers(name)
+        named = check_name(name)
         @observers = @observer_set[name] ||= []
       end
     end
