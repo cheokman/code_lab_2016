@@ -36,11 +36,11 @@ module Axle
           rescue Axle::Errors::AxleErrors => e
             # TODO Axle Errors
             context.merge!(error: error_context(o, e))
-            error_handler(context)
+            error_processor(context)
           ensure
             next if e.nil?
             # Handle any unexpected Error Here
-            ensure_handler(context)
+            ensure_processor(context)
           end
         end 
       end
@@ -53,11 +53,11 @@ module Axle
            }
       end
 
-      def ensure_handler(context)
+      def ensure_processor(context)
         
       end
 
-      def error_handler(context)
+      def error_processor(context)
         
       end
 
