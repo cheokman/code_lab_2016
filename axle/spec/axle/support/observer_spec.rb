@@ -62,6 +62,14 @@ describe Axle::Observer do
 
         it {is_expected.to be_eql([])}
       end
+
+      context "class instance variables @name" do
+        subject {
+          @owner.instance_variable_get(:@name)
+        }
+
+        it {is_expected.to be_eql(nil)}
+      end
     end
   end
 
@@ -142,24 +150,28 @@ describe Axle::Observer do
     end
 
     context "when no any error" do
-      it "call observer one by one" do
+      it "call first observer with context" do
         context = {context: "data"}
         expect(@ob1).to receive(:process).with(context)
-        expect(@ob2).to receive(:process).with(context)
         @owner.send(:notify_observers,context)
       end
 
-      it "ignore call ensure_handler" do
+      it "call following observer wiht returned context" do
         context = {context: "data"}
-        #allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
-        expect(@owner).to_not receive(:ensure_handler).with(context, Axle::Errors::AxleErrors)
+        expect(@ob1).to receive(:process).with(context)
+        expect(@ob2).to receive(:process).with(@ob1.instance_variable_get("@context"))
+        @owner.send(:notify_observers,context)
+      end
+
+      it "ignore call ensure_processor" do
+        context = {context: "data"}
+        expect(@owner).to_not receive(:ensure_processor)#.with(context)
         @owner.send(:notify_observers, context)
       end
 
-      it "ignore call error_handler" do
+      it "ignore call error_processor" do
         context = {context: "data"}
-        #allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
-        expect(@owner).to_not receive(:error_handler).with(context, Axle::Errors::AxleErrors)
+        expect(@owner).to_not receive(:error_processor).with(context)
         @owner.send(:notify_observers, context)
       end
     end
@@ -167,15 +179,21 @@ describe Axle::Observer do
     context "when error" do
       before(:each) do
         @context = {context: "data"}
+        @error_context = {name: 'game1', error: "error"}
+        @return_context = @context.merge(error: @error_context)
       end
 
-      it "call error_handler" do
-        expect(@owner).to_not receive(:error_handler).with(@context, Axle::Errors::AxleErrors)
+      it "call error_processor" do
+        allow(@owner).to receive(:error_context).and_return(@error_context)
+        allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
+        expect(@owner).to receive(:error_processor).with(@return_context)
         @owner.send(:notify_observers, @context)
       end
 
-      it "call ensure_handler" do
-        expect(@owner).to_not receive(:ensure_handler).with(@context, Axle::Errors::AxleErrors)
+      it "call ensure_processor" do
+        allow(@owner).to receive(:error_context).and_return(@error_context)
+        allow(@ob1).to receive(:process).and_raise(Axle::Errors::AxleErrors)
+        expect(@owner).to receive(:ensure_processor).with(@return_context)
         @owner.send(:notify_observers, @context)
       end
     end
