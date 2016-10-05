@@ -3,6 +3,7 @@ module Axle
     def self.included(descendant)
       descendant.instance_variable_set('@observer_set', {})
       descendant.instance_variable_set('@observers', [])
+      descendant.instance_variable_set('@name', nil)
       descendant.extend(ClassMethods)
     end
       
@@ -31,29 +32,38 @@ module Axle
       def notify_observers(context)
         @observers.dup.each do |o|
           begin
-            o.process(context)
+            context = o.process(context)
           rescue Axle::Errors::AxleErrors => e
             # TODO Axle Errors
-            error_handler(context,e)
+            context.merge!(error: error_context(o, e))
+            error_handler(context)
           ensure
             next if e.nil?
             # Handle any unexpected Error Here
-            ensure_handler(context,e)
+            ensure_handler(context)
           end
         end 
       end
 
-      def ensure_handler(context, error)
+      def error_context(observer, error)
+        {     
+              name: @name, 
+          observer: observer, 
+             error: error
+           }
+      end
+
+      def ensure_handler(context)
         
       end
 
-      def error_handler(context, error)
+      def error_handler(context)
         
       end
 
       def get_observers(name)
-        named = check_name(name)
-        @observers = @observer_set[name] ||= []
+        @name = check_name(name)
+        @observers = @observer_set[@name] ||= []
       end
     end
   end
