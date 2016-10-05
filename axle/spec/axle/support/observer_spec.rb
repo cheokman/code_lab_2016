@@ -13,6 +13,14 @@ describe Axle::Observer do
     @ob2 = Class.new {
       extend Axle::Processor
     }
+
+    @new_ob1 = Class.new {
+      extend Axle::Processor
+    }
+
+    @new_ob2 = Class.new {
+      extend Axle::Processor
+    }
   end
 
   describe "#included" do
@@ -88,7 +96,27 @@ describe Axle::Observer do
 
   describe "#add_observer" do
     before(:each) do
-      allow(@owner).to receive(:get_observers) {{"game1" => [@ob1, @ob2]}}
+      @owner.instance_variable_set(:@observer_set, {"game1" => [@ob1, @ob2]})
+    end
+
+    it "can add new game2 without observers" do
+      @owner.add_observer "game2"
+      expect(@owner.instance_variable_get(:@observers)).to be_empty
+    end
+
+    it "can add new game2 observers" do
+      @owner.add_observer "game2", @new_ob1, @new_ob2
+      expect(@owner.instance_variable_get(:@observers)).to be_eql([@new_ob1, @new_ob2])
+    end
+
+    it "can add existing game1 empty observer" do
+      @owner.add_observer "game1"
+      expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2])
+    end
+
+    it "can add existing game1 some new observer" do
+      @owner.add_observer "game1", @new_ob1
+      expect(@owner.instance_variable_get(:@observers)).to be_eql([@ob1, @ob2, @new_ob1])
     end
   end
 
