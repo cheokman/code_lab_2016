@@ -5,6 +5,7 @@ require 'axle/support/processor'
 module Axle
   extend Observer
   extend Processor
+
   Undefined = Object.new.freeze
 
   def self.config
@@ -12,7 +13,7 @@ module Axle
   end
 
   def self.service_base_path
-    @config.service_base_path
+    config.service_base_path
   end
 end
 
@@ -25,6 +26,6 @@ if defined?(Sinatra)
 end
 
 require 'axle/configuration'
-require 'axle/errors/axle_errors'
-require 'axle/errors/observer_set_name_error'
-require 'axle/errors/observer_type_error'
+require 'axle/errors'
+require 'axle/service_adapter'
+require 'axle/sinatra'
