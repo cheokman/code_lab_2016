@@ -1,34 +1,27 @@
 require 'spec_helper'
 
 describe Axle::Configuration do
-  describe "accept_options" do
-    subject {
-      described_class
-    }
+  describe "options" do
+    context "defined options" do
+      subject {
+        described_class.new.instance_variables
+      }
+      
+      it {is_expected.to include(:@service_base_path)}
+      it {is_expected.to include(:@serializer)}
+    end
 
-    it { is_expected.to respond_to(:service_base_path) }
-
-    context "#service_base_path" do
+    context "default value" do
       before(:each) do
-        described_class.service_base_path '/'
-        @config = described_class.new
-      end
-      it "can have default value top path '/'" do
-        expect(described_class.service_base_path).to be_eql('/')
+        @instance = described_class.new
       end
 
-      it "can return in to_h with key service_base_path" do
-        expect(@config.to_h).to have_key(:service_base_path)
+      it "can define '/' as default value of service_base_path" do
+        expect(@instance.service_base_path).to be_eql('/')
       end
 
-      it "can return value in to_h with key service_base_path" do
-        expect(@config.to_h[:service_base_path]).to be_eql('/')
-      end
-
-
-      it "can config other value" do
-        described_class.service_base_path "/base"
-        expect(described_class.service_base_path).to be_eql("/base")
+      it "can define :json as default value of serializer" do
+        expect(@instance.serializer).to be_eql(:json)
       end
     end
   end
