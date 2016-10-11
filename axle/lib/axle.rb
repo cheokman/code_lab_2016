@@ -1,3 +1,5 @@
+require 'json'
+require 'yaml'
 require 'axle/support'
 
 module Axle
