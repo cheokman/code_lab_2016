@@ -1,7 +1,7 @@
 module Axle
   module Processor
-    def self.extend(descendant)
-      descendant.instance_variable_set('@context', {})
+    def self.extended(descendant)
+      descendant.instance_variable_set("@context", {})
     end
 
     def start(context)
@@ -12,9 +12,9 @@ module Axle
 
     def process(context)
       init
-      pre_update
+      before_update
       update
-      post_update
+      after_update
       finalize
     end
 
@@ -23,13 +23,13 @@ private
       @context = context.deep_copy
     end
 
-    def pre_update
+    def before_update
     end
 
     def update
     end
 
-    def post_update
+    def after_update
     end
 
     def finalize
