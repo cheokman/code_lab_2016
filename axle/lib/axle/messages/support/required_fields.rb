@@ -22,16 +22,25 @@ module Axle
 
         private
 
-        def define_field_method(option)
-          
+        def define_field_method(field_name)
+          define_field_reader(field_name)
+          define_field_writer(field_name)
         end
 
-        def define_field_reader(method_name)
-          
+        def define_field_reader(field_name)
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{field_name}           # def default
+              @#{field_name}            #   @default
+            end                         # end
+          RUBY
         end
 
-        def define_field_writer(method_name)
-          
+        def define_field_writer(field_name)
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{field_name}=(value)           # def default=(value)
+              @#{field_name} = value            #   @default = value
+            end                                 # end
+          RUBY
         end
 
         def validate(data)

@@ -65,13 +65,24 @@ describe Axle::Messages::RequiredFields do
     end
   end
 
+  describe "instance fields accessor" do
+    subject {
+      @message.new
+    }
+
+    it {is_expected.to respond_to :type}
+    it {is_expected.to respond_to :type=}
+    it {is_expected.to respond_to :host}
+    it {is_expected.to respond_to :host=}
+  end
+
   describe "inherited class" do
     before(:each) do
       @child_valid_data = {:type => 1, :host => 2, :action => 3}
       @missing_parent_field_data = {:host => 2, :action => 3}
       @missing_field_data = {:type => 1, :host => 2}
     end
-    
+
     context "when inherited extened class" do
       subject {
         @action_message
