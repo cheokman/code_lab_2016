@@ -4,12 +4,13 @@ module Axle
   module Messages
     class Message
       extend Messages::RequiredFields
-      
+
       require_fields :host, :ip, :type
-      attr_reader :host, :ip, :type, :timestamp
+      attr_reader :timestamp
 
       def initialize(type, data, options={})
         validate(data)
+        @data = data
         @type = type
         @host = data['host']
         @ip = data['ip']
