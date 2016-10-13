@@ -3,29 +3,18 @@ require 'spec_helper'
 describe Axle::ServiceAdapter do
   before(:each) do
     @message_data = {"data" => "test"}
-    @service = Class.new {
+    @service_class = Class.new {
       include Axle::ServiceAdapter
     }
+    @service = @service_class.new
   end
 
   describe "ancestor" do
     subject {
-      @service
+      @service_class
     }  
 
-    it {is_expected.to be_kind_of(Axle::Processor)}
     it {is_expected.to be_kind_of(Axle::Serializer)}
-  end
-  
-  describe "#included for instance variables" do
-    subject {
-      @service.instance_variables
-    }
-
-    it {is_expected.to include(:@message_data)}
-    it {is_expected.to include(:@message)}
-    it {is_expected.to include(:@result)}
-    it {is_expected.to include(:@context)}
   end
   
   describe "#parse_params" do
@@ -44,8 +33,23 @@ describe Axle::ServiceAdapter do
     it "can deserialize value" do
       allow(@service).to receive(:extract_message_data).and_return(@message_data.to_json)
       @service.send(:parse_params)
-      expect(@service.instance_variable_get(:@message_data)).to be_eql(@message_data)    
+      expect(@service.message_data).to be_eql(@message_data)    
     end
   end
 
+  describe "#build_message" do
+    before(:each) do
+      @request_info = {:host => "localhost", :ip => '1.1.1.1'}
+      @message_factory = Axle::MessageFactory
+    end
+
+    it 'can merge request_info to message data' do
+      @message = double()
+      allow(@message_factory).to receive(:build).and_return(@message)
+      allow(@service).to receive(:request_info).and_return(@request_info)
+      @service.message_data = {}
+      @service.send(:build_message)
+      expect(@service.instance_variable_get(:@message_data)).to be_eql(@request_info)
+    end
+  end
 end
