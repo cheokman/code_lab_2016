@@ -3,21 +3,19 @@ module Axle
     
     def self.included(descendant)
       descendant.extend ClassMethods
-      descendant.class_eval{include InstanceMethods}
-      descendant.instance_variable_set("@message_data", nil)
-      descendant.instance_variable_set("@message",nil)
-      descendant.instance_variable_set("@result",{})
-      #descendant.instance_variable_set("@context", {})
+      descendant.extend Serializer
+      descendant.class_eval { include InstanceMethods }
     end
     
-    module ClassMethods
-
-      def self.extended(descendant)
-        descendant.extend Processor
-        descendant.extend Serializer
-      end
+    module InstanceMethods
+      attr_accessor :message, :message_data, :process_result, :context
       
       private
+      def init
+        @context = {}
+        @message_data = {}
+        @process_result = default_process_result
+      end
 
       def before_update
         parse_params
@@ -26,18 +24,35 @@ module Axle
       end
 
       def update
-        Axle.notify_observers(@context)
+        @context = Axle.notify_observers(@context)
+      end
+
+      def process_message()
+        init
+        before_update
+        update
+        after_update
+        final
       end
 
       def after_update
-        
+        update_from_context
+      end
+
+      def final
+        @context
       end
 
       def parse_params
+        format params[:format].to_sym unless params[:format].nil?
         @message_data = deserialize_value(extract_message_data)
       end
 
       def extract_message_data
+        {}
+      end
+
+      def request_info
         {}
       end
 
@@ -50,22 +65,42 @@ module Axle
         @context[:message] = @message
       end
 
-      def default_result
-        result = { 
+      def default_process_result
+        { 
                      status: 200,
                        text: 'OK'
                    }
       end
 
       def respond_with_result
-        default_result.merge({ 
-          status: result[:status],
-            text: serialize_value(result)
+        default_process_result.merge({ 
+          status: @process_result[:status],
+            text: serialize_value(@process_result[:response])
         })
+      end
+
+      def update_from_context
+        return if @context[:status].nil?
+        @process_result[:status] = @context[:status]
+        @process_result[:text]   = @context[:status] == 200 ?
+                          (@context[:response] || 'Request is successfully carried out.') :
+                          @context[:error]
+        
+      end
+
+      def deserialize_value(value)
+        self.class.deserialize_value(value)
+      end
+
+      def serialize_value(value)
+        self.class.serialize_value(value)
       end
     end
 
-    module InstanceMethods
+    module ClassMethods
+
+    
+
     end
       
   end
