@@ -65,14 +65,15 @@ describe Axle::Service do
   describe "#post /message/create" do
     context "when post /message/create" do
       before(:each) do
-        post '/message/create?action=lookback'
+        @msg = {'msg' => {'type' => 'loopback'}.to_json}
       end
 
-      describe "environment variables" do
-        it "can set type to action" do
-          puts app.helpers.type
-          expect(app.helpers.format).to be_eql("action")
-        end
+      it "can return 200" do
+        @message = double()
+        allow(Axle::MessageFactory).to receive(:build).and_return({data: 'message'})
+        allow(Axle).to receive(:notify_observers).and_return({status: 200, response: @msg['msg']})
+        post "/messages/create", @msg
+        expect(last_response.body).to be_eql({status: 200, text: @msg['msg']}.to_json)
       end
     end
   end
