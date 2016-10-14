@@ -10,6 +10,7 @@ module Axle
       format :json
     end
 
+    #TODO refactor format handling
     get "/check.?:format?" do
       @process_result = default_process_result
       format params[:format].to_sym unless params[:format].nil?
@@ -19,6 +20,7 @@ module Axle
 
     post "#{Axle.service_base_path}/messages/create.?:format?" do #need to implement API Versioning
       @type = "action"
+      format params[:format].to_sym unless params[:format].nil?
       process_message
       respond_with_result
     end
@@ -33,7 +35,7 @@ module Axle
 
     private
     def extract_message_data
-      data = params[:msg]
+      data = params['msg']
       data
     end
 
