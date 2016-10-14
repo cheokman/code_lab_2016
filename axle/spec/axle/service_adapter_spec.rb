@@ -17,7 +17,7 @@ describe Axle::ServiceAdapter do
     it {is_expected.to be_kind_of(Axle::Serializer)}
   end
   
-  describe "#parse_params" do
+  describe ".parse_params" do
     it "can call extract_message_data" do
       allow(@service).to receive(:deserialize_value).and_return(@message_data)
       expect(@service).to receive(:extract_message_data)
@@ -37,7 +37,7 @@ describe Axle::ServiceAdapter do
     end
   end
 
-  describe "#build_message" do
+  describe ".build_message" do
     before(:each) do
       @request_info = {:host => "localhost", :ip => '1.1.1.1'}
       @message_factory = Axle::MessageFactory
@@ -50,6 +50,68 @@ describe Axle::ServiceAdapter do
       @service.message_data = {}
       @service.send(:build_message)
       expect(@service.instance_variable_get(:@message_data)).to be_eql(@request_info)
+    end
+  end
+
+  describe ".update_from_context" do
+    before(:each) do
+      @no_status_context = {}
+      @error_context = {status: 400, error: "error occurred"}
+      @no_response_context = {status: 200}
+      @context = {status: 200, response: {message: 'hi'}}
+    end
+
+    context "no status" do
+      before(:each) do
+        @service.context = @no_status_context
+        @service.process_result = @service.send(:default_process_result)
+      end
+      it "return nil" do
+        expect(@service.send(:update_from_context)).to be_nil
+      end
+
+      it "does not update process_result" do
+        expect(@service.process_result).to be_eql(@service.send(:default_process_result))        
+      end
+    end
+
+    context "error" do
+      before(:each) do
+        @service.context = @error_context
+        @service.process_result = @service.send(:default_process_result)
+        @service.send(:update_from_context)
+        @error_result = {status: @error_context[:status], text: @error_context[:error]}
+      end
+
+      it "return error process_result" do
+        expect(@service.process_result).to be_eql(@error_result)
+      end
+    end
+
+    context "no response" do
+      before(:each) do
+        @service.context = @no_response_context
+        @service.process_result = @service.send(:default_process_result)
+        @service.send(:update_from_context)
+        @result = {status: @no_response_context[:status], text: 'Request is successfully carried out.'}
+      end
+
+      it "return request successful" do
+        expect(@service.process_result).to be_eql(@result)
+      end
+    end
+
+    context "normal" do
+      before(:each) do
+        @service.context = @context
+        @service.process_result = @service.send(:default_process_result)
+        @service.send(:update_from_context)
+        @result = {status: @context[:status], text: @context[:response]}
+      end
+
+      it "return success and response" do
+        expect(@service.process_result).to be_eql(@result)
+      end
     end
   end
 end
