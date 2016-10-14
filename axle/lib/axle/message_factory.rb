@@ -4,6 +4,7 @@ module Axle
 
       def build(data, options={})
         validate(data)
+        new(data, options).message
       end
 
 private
@@ -24,7 +25,7 @@ private
     end
 
     def initialize_class
-      @klass = look_class
+      @klass = lookup_class
     end
 
     def initialize_message
