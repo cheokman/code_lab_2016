@@ -42,7 +42,8 @@ module Axle
             # Handle any unexpected Error Here
             ensure_processor(context)
           end
-        end 
+        end
+        context
       end
 
       def error_context(observer, error)

@@ -156,10 +156,10 @@ describe Axle::Observer do
         @owner.send(:notify_observers,context)
       end
 
-      it "call following observer wiht returned context" do
+      it "call following observer with returned context" do
         context = {context: "data"}
-        expect(@ob1).to receive(:process).with(context)
-        expect(@ob2).to receive(:process).with(@ob1.instance_variable_get("@context"))
+        allow(@ob1).to receive(:process).with(context).and_return(context)
+        expect(@ob2).to receive(:process).with(context)
         @owner.send(:notify_observers,context)
       end
 
