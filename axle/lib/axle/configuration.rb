@@ -7,7 +7,7 @@ module Axle
     attr_accessor :serializer
 
     def initialize(options={})
-      @service_base_path = options.fetch(:service_base_path, '/')
+      @service_base_path = options.fetch(:service_base_path, '')
       @serializer = options.fetch(:serializer, :json)
       yield self if block_given?
     end

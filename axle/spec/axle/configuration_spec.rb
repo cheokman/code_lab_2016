@@ -16,8 +16,8 @@ describe Axle::Configuration do
         @instance = described_class.new
       end
 
-      it "can define '/' as default value of service_base_path" do
-        expect(@instance.service_base_path).to be_eql('/')
+      it "can define '' as default value of service_base_path" do
+        expect(@instance.service_base_path).to be_eql('')
       end
 
       it "can define :json as default value of serializer" do
