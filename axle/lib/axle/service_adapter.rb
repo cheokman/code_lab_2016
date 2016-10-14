@@ -28,11 +28,16 @@ module Axle
       end
 
       def process_message()
+        begin
         init
         before_update
         update
         after_update
         final
+      rescue Exception => e
+        @context[:status] = 500
+        @context[:error] = e.message
+      end
       end
 
       def after_update
@@ -44,7 +49,6 @@ module Axle
       end
 
       def parse_params
-        format params[:format].to_sym unless params[:format].nil?
         @message_data = deserialize_value(extract_message_data)
       end
 
@@ -69,17 +73,15 @@ module Axle
         { 
                      status: 200,
                        text: 'OK'
-                   }
+         }
       end
 
       def respond_with_result
-        default_process_result.merge({ 
-          status: @process_result[:status],
-            text: serialize_value(@process_result[:response])
-        })
+        serialize_value(@process_result)
       end
 
       def update_from_context
+        @process_result = default_process_result
         return if @context[:status].nil?
         @process_result[:status] = @context[:status]
         @process_result[:text]   = @context[:status] == 200 ?
@@ -98,9 +100,6 @@ module Axle
     end
 
     module ClassMethods
-
-    
-
     end
       
   end
