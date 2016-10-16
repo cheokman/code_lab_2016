@@ -1,0 +1,13 @@
+div id="game"
+  div id="top" class="row"
+    center top
+  div class = "row"
+    div class = "col-md-1"
+      center left
+    div class = "col-md-10"
+      center Screen View
+      div class="row" v-for="i in screen_view.length"
+        div class="col-md-4" v-for="j in screen_view[i].length"
+          center = "{{screen_view[i][j]}}"
+    div class = "col-md-1" 
+      center right
